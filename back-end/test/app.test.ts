@@ -50,6 +50,56 @@ describe("Creating recommendations tests suite", () => {
 
 });
 
+describe("Recommendation score tests suite", () => {
+
+    it("add a point to the recommendation score", async () => {
+        await deleteRecommendation(name);
+
+        const response = await supertest(app).post(`/recommendations`).send({ name, youtubeLink });
+        expect(response.statusCode).toBe(201);
+
+        const recommendation = await prisma.recommendation.findFirst({
+            where: { name: name }
+        });
+        expect(recommendation.youtubeLink).toBe(youtubeLink);
+
+        const previousScore = recommendation.score;
+        const responseUpvote = await supertest(app).post(`/recommendations/${recommendation.id}/upvote`);
+        expect(responseUpvote.statusCode).toBe(200);
+
+        const recommendationAfterUpvote = await prisma.recommendation.findFirst({
+            where: { name: name }
+        });
+        expect(recommendationAfterUpvote.score).toBe(previousScore + 1);
+
+        await deleteRecommendation(name);
+    });
+
+    it("remove a point from the recommendation score", async () => {
+        await deleteRecommendation(name);
+
+        const response = await supertest(app).post(`/recommendations`).send({ name, youtubeLink });
+        expect(response.statusCode).toBe(201);
+
+        const recommendation = await prisma.recommendation.findFirst({
+            where: { name: name }
+        });
+        expect(recommendation.youtubeLink).toBe(youtubeLink);
+
+        const previousScore = recommendation.score;
+        const responseDownvote = await supertest(app).post(`/recommendations/${recommendation.id}/downvote`);
+        expect(responseDownvote.statusCode).toBe(200);
+
+        const recommendationAfterDownvote = await prisma.recommendation.findFirst({
+            where: { name: name }
+        });
+        expect(recommendationAfterDownvote.score).toBe(previousScore - 1);
+
+        await deleteRecommendation(name);
+    });
+
+});
+
 async function deleteRecommendation(name) {
     await prisma.$executeRaw`DELETE FROM recommendations WHERE name = ${name}`;
 };
