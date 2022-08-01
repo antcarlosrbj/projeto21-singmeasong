@@ -8,7 +8,9 @@
   </h3>
 </p>
 
-![](https://user-images.githubusercontent.com/98707235/182051586-af8c0533-e6d8-46de-b6e0-57bdbc6a7f85.gif)
+<p align="center">
+	<img height="500px" src="https://user-images.githubusercontent.com/98707235/182051586-af8c0533-e6d8-46de-b6e0-57bdbc6a7f85.gif">
+</p>
 
 ## Usage
 
